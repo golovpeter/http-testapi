@@ -1,6 +1,7 @@
 package main
 
 import (
+	"github.com/golovpeter/http-testapi/internal/store"
 	"log"
 	"os"
 
@@ -29,6 +30,13 @@ func main() {
 	logLevel := os.Getenv("LOG_LEVEL")
 	if logLevel != "" {
 		config.LogLevel = os.Getenv("LOG_LEVEL")
+	}
+
+	databaseURL := os.Getenv("DATABASE_URL")
+	if databaseURL != "" {
+		config.Store = &store.Config{
+			DatabaseURL: databaseURL,
+		}
 	}
 
 	s := apiserver.New(config)
