@@ -1,10 +1,11 @@
 package apiserver
 
 import (
+	"net/http"
+
 	"github.com/golovpeter/http-testapi/internal/store"
 	"github.com/gorilla/mux"
 	"github.com/sirupsen/logrus"
-	"net/http"
 )
 
 type APIServer struct {
