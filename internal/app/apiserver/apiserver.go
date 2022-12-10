@@ -66,5 +66,6 @@ func (s *APIServer) configureStore() error {
 func (s *APIServer) handleHello() http.HandlerFunc {
 
 	return func(w http.ResponseWriter, r *http.Request) {
+		w.Write([]byte("Hello"))
 	}
 }
