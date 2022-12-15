@@ -1,9 +1,10 @@
 package model
 
 import (
+	"golang.org/x/crypto/bcrypt"
+
 	validation "github.com/go-ozzo/ozzo-validation"
 	"github.com/go-ozzo/ozzo-validation/is"
-	"golang.org/x/crypto/bcrypt"
 )
 
 type User struct {

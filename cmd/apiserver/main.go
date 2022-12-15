@@ -1,7 +1,6 @@
 package main
 
 import (
-	"github.com/golovpeter/http-testapi/internal/store"
 	"log"
 	"os"
 
@@ -34,14 +33,10 @@ func main() {
 
 	databaseURL := os.Getenv("DATABASE_URL")
 	if databaseURL != "" {
-		config.Store = &store.Config{
-			DatabaseURL: databaseURL,
-		}
+		config.DatabaseURL = databaseURL
 	}
 
-	s := apiserver.New(config)
-
-	if err := s.Start(); err != nil {
+	if err := apiserver.Start(config); err != nil {
 		log.Fatalln(err)
 	}
 }
