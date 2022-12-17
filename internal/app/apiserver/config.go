@@ -4,6 +4,7 @@ type Config struct {
 	BindAddr    string
 	LogLevel    string
 	DatabaseURL string
+	SessionKey  string
 }
 
 func NewConfig() *Config {

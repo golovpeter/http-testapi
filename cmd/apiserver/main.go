@@ -36,6 +36,11 @@ func main() {
 		config.DatabaseURL = databaseURL
 	}
 
+	sessionKey := os.Getenv("SESSION_KEY")
+	if sessionKey != "" {
+		config.SessionKey = sessionKey
+	}
+
 	if err := apiserver.Start(config); err != nil {
 		log.Fatalln(err)
 	}
