@@ -4,18 +4,21 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
-	"github.com/golovpeter/http-testapi/internal/app/model"
-	"github.com/gorilla/sessions"
 	"net/http"
 
+	"github.com/golovpeter/http-testapi/internal/app/model"
 	"github.com/golovpeter/http-testapi/internal/store"
+	"github.com/google/uuid"
+	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
+	"github.com/gorilla/sessions"
 	"github.com/sirupsen/logrus"
 )
 
 const (
 	sessionName        = "gopherschool"
 	ctxKeyUser  ctxKey = iota
+	ctxKeyRequestID
 )
 
 var (
@@ -50,8 +53,28 @@ func (s *server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *server) configureRouter() {
+	s.router.Use(s.setRequestID)
+	s.router.Use(handlers.CORS(handlers.AllowedOrigins([]string{"*"})))
 	s.router.HandleFunc("/users", s.HandleUsersCreate()).Methods("POST")
 	s.router.HandleFunc("/sessions", s.HandleSessionsCreate()).Methods("POST")
+
+	private := s.router.PathPrefix("/private").Subrouter()
+	private.Use(s.AuthenticateUser)
+	private.HandleFunc("/whoami", s.HandleWhoAmI()).Methods("GET")
+}
+
+func (s *server) setRequestID(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		id := uuid.New().String()
+		w.Header().Set("X-Request-ID", id)
+		next.ServeHTTP(w, r.WithContext(context.WithValue(r.Context(), ctxKeyRequestID, id)))
+	})
+}
+
+func (s *server) HandleWhoAmI() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		s.respond(w, r, http.StatusOK, r.Context().Value(ctxKeyUser).(*model.User))
+	}
 }
 
 func (s *server) HandleUsersCreate() http.HandlerFunc {
